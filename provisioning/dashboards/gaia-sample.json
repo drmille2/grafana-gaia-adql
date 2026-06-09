@@ -1,0 +1,568 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_GAIA_ADQL",
+      "label": "Gaia ADQL",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "davidmillerpf9-gaia-adql-datasource",
+      "pluginName": "Gaia ADQL"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "davidmillerpf9-gaia-adql-datasource",
+      "name": "Gaia ADQL",
+      "version": "0.1.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": []
+  },
+  "description": "Sample dashboard for exploring the Gaia stellar catalog via ADQL",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "davidmillerpf9-gaia-adql-datasource",
+        "uid": "${DS_GAIA_ADQL}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ra"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "RA (deg)"
+              },
+              {
+                "id": "unit",
+                "value": "degree"
+              },
+              {
+                "id": "decimals",
+                "value": 6
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "dec"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Dec (deg)"
+              },
+              {
+                "id": "unit",
+                "value": "degree"
+              },
+              {
+                "id": "decimals",
+                "value": 6
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "phot_g_mean_mag"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "G mag"
+              },
+              {
+                "id": "decimals",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parallax"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Parallax (mas)"
+              },
+              {
+                "id": "unit",
+                "value": "mas"
+              },
+              {
+                "id": "decimals",
+                "value": 4
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "G mag"
+          }
+        ]
+      },
+      "title": "Bright Stars Near Galactic Center",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {
+            "type": "davidmillerpf9-gaia-adql-datasource",
+            "uid": "${DS_GAIA_ADQL}"
+          },
+          "adqlQuery": "SELECT source_id, ra, dec, phot_g_mean_mag, parallax, pmra, pmdec\nFROM gaiadr3.gaia_source\nWHERE CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 266.4, -29.0, 1.0)) = 1\n  AND phot_g_mean_mag < 15\nORDER BY phot_g_mean_mag ASC",
+          "maxRows": 100,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "davidmillerpf9-gaia-adql-datasource",
+        "uid": "${DS_GAIA_ADQL}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "custom": {
+            "pointSize": 3,
+            "fillOpacity": 80,
+            "lineWidth": 0,
+            "show": "points"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "id": 2,
+      "options": {
+        "seriesMapping": "auto",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "legend": {
+          "showLegend": false,
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "Proper Motion Diagram (pmra vs pmdec)",
+      "type": "xychart",
+      "targets": [
+        {
+          "datasource": {
+            "type": "davidmillerpf9-gaia-adql-datasource",
+            "uid": "${DS_GAIA_ADQL}"
+          },
+          "adqlQuery": "SELECT pmra, pmdec\nFROM gaiadr3.gaia_source\nWHERE CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 266.4, -29.0, 0.5)) = 1\n  AND pmra IS NOT NULL\n  AND pmdec IS NOT NULL\n  AND pmra BETWEEN -20 AND 20\n  AND pmdec BETWEEN -20 AND 20",
+          "maxRows": 500,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "davidmillerpf9-gaia-adql-datasource",
+        "uid": "${DS_GAIA_ADQL}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "title": "Star Count in Field",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "davidmillerpf9-gaia-adql-datasource",
+            "uid": "${DS_GAIA_ADQL}"
+          },
+          "adqlQuery": "SELECT COUNT(*) AS star_count\nFROM gaiadr3.gaia_source\nWHERE CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', 266.4, -29.0, 1.0)) = 1",
+          "maxRows": 1,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Hertzsprung-Russell Diagram",
+      "type": "xychart",
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 24
+      },
+      "datasource": {
+        "type": "davidmillerpf9-gaia-adql-datasource",
+        "uid": "${DS_GAIA_ADQL}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "davidmillerpf9-gaia-adql-datasource",
+            "uid": "${DS_GAIA_ADQL}"
+          },
+          "adqlQuery": "SELECT\n  bp_rp,\n  phot_g_mean_mag + 5*LOG10(parallax) - 10 AS abs_mag\nFROM gaiadr3.gaia_source\nWHERE parallax > 10\n  AND parallax_over_error > 10\n  AND bp_rp IS NOT NULL\n  AND phot_g_mean_mag IS NOT NULL",
+          "maxRows": 2000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "semi-dark-blue"
+          },
+          "custom": {
+            "pointSize": 2,
+            "fillOpacity": 70,
+            "lineWidth": 0,
+            "show": "points"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bp_rp"
+            },
+            "properties": [
+              {
+                "id": "custom.axisLabel",
+                "value": "Color Index (BP \u2212 RP)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "abs_mag"
+            },
+            "properties": [
+              {
+                "id": "custom.axisLabel",
+                "value": "Absolute Magnitude M\u2080 (brighter \u2191)"
+              },
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "seriesMapping": "auto",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "legend": {
+          "showLegend": false,
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Pleiades Color-Magnitude Diagram",
+      "type": "xychart",
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 24
+      },
+      "datasource": {
+        "type": "davidmillerpf9-gaia-adql-datasource",
+        "uid": "${DS_GAIA_ADQL}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "davidmillerpf9-gaia-adql-datasource",
+            "uid": "${DS_GAIA_ADQL}"
+          },
+          "adqlQuery": "SELECT\n  bp_rp,\n  phot_g_mean_mag\nFROM gaiadr3.gaia_source\nWHERE CONTAINS(\n    POINT('ICRS', ra, dec),\n    CIRCLE('ICRS', 56.75, 24.12, 3.0)\n  ) = 1\n  AND pmra  BETWEEN 15  AND 25\n  AND pmdec BETWEEN -52 AND -38\n  AND parallax BETWEEN 5 AND 9\n  AND bp_rp IS NOT NULL\n  AND phot_g_mean_mag IS NOT NULL",
+          "maxRows": 1000
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "semi-dark-orange"
+          },
+          "custom": {
+            "pointSize": 4,
+            "fillOpacity": 80,
+            "lineWidth": 0,
+            "show": "points"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bp_rp"
+            },
+            "properties": [
+              {
+                "id": "custom.axisLabel",
+                "value": "Color Index (BP \u2212 RP)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "phot_g_mean_mag"
+            },
+            "properties": [
+              {
+                "id": "custom.axisLabel",
+                "value": "Apparent Magnitude G (brighter \u2191)"
+              },
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "seriesMapping": "auto",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "legend": {
+          "showLegend": false,
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Proper Motion Vector Field \u2014 Sagittarius A* Region",
+      "type": "ae3e-plotly-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 12,
+        "h": 24
+      },
+      "datasource": {
+        "type": "davidmillerpf9-gaia-adql-datasource",
+        "uid": "${DS_GAIA_ADQL}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "davidmillerpf9-gaia-adql-datasource",
+            "uid": "${DS_GAIA_ADQL}"
+          },
+          "adqlQuery": "SELECT\n  ra,\n  dec,\n  pmra,\n  pmdec\nFROM gaiadr3.gaia_source\nWHERE CONTAINS(\n    POINT('ICRS', ra, dec),\n    CIRCLE('ICRS', 266.4168, -29.0078, 0.1)\n  ) = 1\n  AND pmra  IS NOT NULL\n  AND pmdec IS NOT NULL",
+          "maxRows": 6000
+        }
+      ],
+      "options": {
+        "script": "\nvar frame = data.series[0];\n\nfunction getField(name) {\n  var f = frame.fields.find(function(f){ return f.name === name; });\n  if (!f) return [];\n  var out = [];\n  for (var i = 0; i < f.values.length; i++) out.push(f.values.get(i));\n  return out;\n}\n\nvar ra    = getField('ra');\nvar dec   = getField('dec');\nvar pmra  = getField('pmra');\nvar pmdec = getField('pmdec');\n\nvar pmMag = ra.map(function(_, i){\n  return Math.sqrt(pmra[i]*pmra[i] + pmdec[i]*pmdec[i]);\n});\nvar maxPm = Math.max.apply(null, pmMag) || 1;\n\nvar scale = 0.0008;\nvar tipX = ra.map(function(x, i){\n  return x + pmra[i] * scale;\n});\nvar tipY = dec.map(function(y, i){\n  return y + pmdec[i] * scale;\n});\n\nvar hover = ra.map(function(_, i){\n  return ('RA: '    + ra[i].toFixed(4)    + '\\u00b0' +\n          '<br>Dec: '   + dec[i].toFixed(4)   + '\\u00b0' +\n          '<br>pmra: '  + pmra[i].toFixed(2)  + ' mas/yr' +\n          '<br>pmdec: ' + pmdec[i].toFixed(2) + ' mas/yr' +\n          '<br>|PM|: '  + pmMag[i].toFixed(1) + ' mas/yr');\n});\n\n// Shaft lines: base -> tip\nvar xShaft = [], yShaft = [];\nra.forEach(function(x, i){\n  xShaft.push(x, tipX[i], null);\n  yShaft.push(dec[i], tipY[i], null);\n});\n\n// V-shaped arrowheads drawn as line segments \u2014 no marker.angle or arrow symbol needed.\n// Each head: arm1 -> tip -> arm2 -> null\nvar openAngle = Math.PI / 5; // 36 deg half-angle\nvar headFrac  = 0.15;        // arm length as fraction of shaft length\nvar xHead = [], yHead = [];\nra.forEach(function(x, i){\n  var dx = tipX[i] - x;\n  var dy = tipY[i] - dec[i];\n  var shaftLen = Math.sqrt(dx*dx + dy*dy) || 1e-10;\n  var theta    = Math.atan2(dy, dx);       // direction of motion\n  var back     = theta + Math.PI;          // opposite direction\n  var armLen   = shaftLen * headFrac;\n  var x1 = tipX[i] + armLen * Math.cos(back + openAngle);\n  var y1 = tipY[i] + armLen * Math.sin(back + openAngle);\n  var x2 = tipX[i] + armLen * Math.cos(back - openAngle);\n  var y2 = tipY[i] + armLen * Math.sin(back - openAngle);\n  xHead.push(x1, tipX[i], x2, null);\n  yHead.push(y1, tipY[i], y2, null);\n});\n\n// Base dots: coloured by PM magnitude, no border\nvar baseTrace = {\n  type: 'scatter', mode: 'markers',\n  x: ra, y: dec,\n  marker: {\n    size: 4,\n    color: pmMag,\n    colorscale: 'RdYlBu',\n    reversescale: true,\n    cmin: 0, cmax: maxPm,\n    colorbar: { title: 'PM (mas/yr)', thickness: 14, len: 0.75 },\n    line: { width: 0, color: 'rgba(0,0,0,0)' }\n  },\n  text: hover, hoverinfo: 'text', showlegend: false\n};\n\nvar shaftTrace = {\n  type: 'scatter', mode: 'lines',\n  x: xShaft, y: yShaft,\n  line: { color: 'rgba(147,197,253,0.65)', width: 1 },\n  hoverinfo: 'none', showlegend: false\n};\n\nvar headTrace = {\n  type: 'scatter', mode: 'lines',\n  x: xHead, y: yHead,\n  line: { color: 'rgba(147,197,253,0.9)', width: 1.5 },\n  hoverinfo: 'none', showlegend: false\n};\n\n// Sagittarius A* position marker\nvar sgrATrace = {\n  type: 'scatter', mode: 'markers+text',\n  x: [266.4168], y: [-29.0078],\n  marker: {\n    symbol: 'cross-thin',\n    size: 20,\n    color: '#facc15',\n    line: { width: 2.5, color: '#facc15' }\n  },\n  text: ['Sgr A*'],\n  textposition: 'top right',\n  textfont: { color: '#facc15', size: 12 },\n  hoverinfo: 'text',\n  hovertext: ['Sagittarius A*<br>RA: 266.4168\u00b0<br>Dec: \u221229.0078\u00b0'],\n  showlegend: false\n};\n\nreturn {\n  data: [baseTrace, shaftTrace, headTrace, sgrATrace],\n  layout: {\n    xaxis: {\n      title: 'Right Ascension (deg)',\n      type: 'linear', autorange: 'reversed',\n      color: '#d1d5db', gridcolor: '#374151', zerolinecolor: '#374151'\n    },\n    yaxis: {\n      title: 'Declination (deg)',\n      type: 'linear', scaleanchor: 'x', scaleratio: 1,\n      color: '#d1d5db', gridcolor: '#374151', zerolinecolor: '#374151'\n    },\n    plot_bgcolor: '#111827',\n    paper_bgcolor: '#111827',\n    font: { color: '#d1d5db', size: 12 },\n    margin: { t: 10, b: 50, l: 65, r: 20 }\n  }\n};\n",
+        "onclick": "",
+        "onrender": ""
+      }
+    },
+    {
+      "id": 7,
+      "title": "Pleiades Star Field \u2014 Spectral Colors",
+      "type": "ae3e-plotly-panel",
+      "gridPos": {
+        "x": 12,
+        "y": 36,
+        "w": 12,
+        "h": 24
+      },
+      "datasource": {
+        "type": "davidmillerpf9-gaia-adql-datasource",
+        "uid": "${DS_GAIA_ADQL}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "davidmillerpf9-gaia-adql-datasource",
+            "uid": "${DS_GAIA_ADQL}"
+          },
+          "adqlQuery": "SELECT ra, dec, bp_rp, phot_g_mean_mag\nFROM gaiadr3.gaia_source\nWHERE CONTAINS(\n    POINT('ICRS', ra, dec),\n    CIRCLE('ICRS', 56.75, 24.12, 3.0)\n  ) = 1\n  AND pmra  BETWEEN 15  AND 25\n  AND pmdec BETWEEN -52 AND -38\n  AND parallax BETWEEN 6.5 AND 8.5\n  AND bp_rp IS NOT NULL\n  AND phot_g_mean_mag IS NOT NULL",
+          "maxRows": 2000
+        }
+      ],
+      "options": {
+        "script": "\nvar frame = data.series[0];\n\nfunction getField(name) {\n  var f = frame.fields.find(function(f){ return f.name === name; });\n  if (!f) return [];\n  var out = [];\n  for (var i = 0; i < f.values.length; i++) out.push(f.values.get(i));\n  return out;\n}\n\nvar ra   = getField('ra');\nvar dec  = getField('dec');\nvar bprp = getField('bp_rp');\nvar gmag = getField('phot_g_mean_mag');\n\nvar sizes = gmag.map(function(m) {\n  return Math.max(2, Math.min(22, 19 - m));\n});\n\nvar colorscale = [\n  [0.000, '#9bb0ff'],\n  [0.054, '#aabfff'],\n  [0.135, '#cad7ff'],\n  [0.216, '#f8f7ff'],\n  [0.324, '#fff4ea'],\n  [0.459, '#ffd2a1'],\n  [0.595, '#ffb066'],\n  [0.730, '#ff8833'],\n  [0.865, '#ff4500'],\n  [1.000, '#cc2200']\n];\n\nvar hover = ra.map(function(_, i) {\n  return ('RA: '      + ra[i].toFixed(4)   + '\\u00b0' +\n          '<br>Dec: ' + dec[i].toFixed(4)  + '\\u00b0' +\n          '<br>BP\\u2212RP: ' + bprp[i].toFixed(2) +\n          '<br>G: '   + gmag[i].toFixed(2) + ' mag');\n});\n\nreturn {\n  data: [{\n    type: 'scatter', mode: 'markers',\n    x: ra, y: dec,\n    marker: {\n      size: sizes,\n      color: bprp,\n      colorscale: colorscale,\n      cmin: -0.2, cmax: 3.5,\n      colorbar: { title: 'BP\\u2212RP', thickness: 14, len: 0.75 },\n      line: { width: 0 },\n      opacity: 0.95\n    },\n    text: hover, hoverinfo: 'text', showlegend: false\n  }],\n  layout: {\n    xaxis: {\n      title: 'Right Ascension (deg)',\n      type: 'linear', autorange: 'reversed',\n      color: '#d1d5db', gridcolor: '#1f2937', zerolinecolor: '#1f2937'\n    },\n    yaxis: {\n      title: 'Declination (deg)',\n      type: 'linear', scaleanchor: 'x', scaleratio: 1,\n      color: '#d1d5db', gridcolor: '#1f2937', zerolinecolor: '#1f2937'\n    },\n    plot_bgcolor: '#000000',\n    paper_bgcolor: '#111827',\n    font: { color: '#d1d5db', size: 12 },\n    margin: { t: 10, b: 50, l: 65, r: 20 }\n  }\n};\n",
+        "onclick": "",
+        "onrender": ""
+      }
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [
+    "gaia",
+    "astronomy",
+    "adql"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "DS_GAIA_ADQL",
+        "options": [],
+        "query": "davidmillerpf9-gaia-adql-datasource",
+        "refresh": 1,
+        "type": "datasource",
+        "label": "Datasource"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Gaia Stellar Catalog Explorer",
+  "uid": "gaia-adql-sample",
+  "version": 1
+}

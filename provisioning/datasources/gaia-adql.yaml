@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+  - name: Gaia ADQL
+    type: davidmillerpf9-gaia-adql-datasource
+    access: proxy
+    isDefault: true
+    jsonData:
+      baseUrl: https://gea.esac.esa.int/tap-server/tap
+    version: 1
+    editable: true

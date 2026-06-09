@@ -1,0 +1,45 @@
+{
+  "type": "datasource",
+  "name": "Gaia ADQL",
+  "id": "davidmillerpf9-gaia-adql-datasource",
+  "state": "alpha",
+  "backend": true,
+  "executable": "gpx_gaia_adql",
+  "info": {
+    "description": "Query the ESA Gaia astronomical catalog using ADQL (Astronomical Data Query Language) via a TAP (Table Access Protocol) service.",
+    "author": {
+      "name": "David Miller"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Gaia Archive",
+        "url": "https://gea.esac.esa.int/archive/"
+      },
+      {
+        "name": "ADQL Reference",
+        "url": "https://www.ivoa.net/documents/ADQL/"
+      }
+    ],
+    "version": "%VERSION%",
+    "updated": "2024-01-01"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.0.0",
+    "grafanaVersion": "10.0.x"
+  },
+  "routes": [],
+  "annotations": false,
+  "metrics": true,
+  "alerting": false,
+  "logs": false,
+  "tracing": false,
+  "streaming": false,
+  "queryOptions": {
+    "maxDataPoints": false,
+    "minInterval": false
+  }
+}

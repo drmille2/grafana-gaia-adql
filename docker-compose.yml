@@ -1,0 +1,36 @@
+services:
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: grafana-gaia-adql-dev
+    entrypoint: ["/grafana-entrypoint.sh"]
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_DEFAULT_APP_MODE=development
+      - GF_LOG_LEVEL=debug
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=davidmillerpf9-gaia-adql-datasource
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=ae3e-plotly-panel
+    volumes:
+      - ./dist:/var/lib/grafana/plugins/davidmillerpf9-gaia-adql-datasource
+      - ./provisioning:/etc/grafana/provisioning
+      - ./scripts/grafana-entrypoint.sh:/grafana-entrypoint.sh
+      - ./grafana.ini:/etc/grafana/grafana.ini
+      - grafana-storage:/var/lib/grafana
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/api/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+    networks:
+      - grafana-dev
+
+volumes:
+  grafana-storage:
+
+networks:
+  grafana-dev:
