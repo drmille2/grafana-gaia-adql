@@ -1,0 +1,25 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.tsbuildinfo
+
+# Go build artifacts
+pkg/plugin/gpx_*
+*.exe
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.local
+
+# Grafana data directory (docker volume mounts, not the provisioning config)
+grafana-data/
+
+# Packaged plugin output (see DEPLOYMENT.md)
+build/
